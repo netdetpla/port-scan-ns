@@ -30,7 +30,8 @@ object Main {
 
     private fun execute() {
         Log.info("nmap start")
-        val nmapBuilder = ProcessBuilder("nmap -Pn -n -sSV --open -vv -T5 -oX /result.xml -p $ports -iL /input_file".split(" "))
+        val nmapBuilder =
+            ProcessBuilder("nmap -Pn -n -sSV --open -vv -T5 -oX /result.xml -p $ports -iL /input_file".split(" "))
         nmapBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         nmapBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         nmapBuilder.directory(File("/"))
@@ -51,31 +52,31 @@ object Main {
             val ports = ArrayList<Port>()
             for (j in 1..portNodes.length) {
                 val state = (xPath.evaluate(
-                        "//host[$i]/ports/port[$j]/state/@state",
-                        doc,
-                        XPathConstants.NODE
+                    "//host[$i]/ports/port[$j]/state/@state",
+                    doc,
+                    XPathConstants.NODE
                 ) as Node).textContent
                 if (state != "open")
                     continue
                 val protocol = (xPath.evaluate(
-                        "//host[$i]/ports/port[$j]/@protocol",
-                        doc,
-                        XPathConstants.NODE
+                    "//host[$i]/ports/port[$j]/@protocol",
+                    doc,
+                    XPathConstants.NODE
                 ) as Node).textContent
                 val portID = (xPath.evaluate(
-                        "//host[$i]/ports/port[$j]/@portid",
-                        doc,
-                        XPathConstants.NODE
+                    "//host[$i]/ports/port[$j]/@portid",
+                    doc,
+                    XPathConstants.NODE
                 ) as Node).textContent
                 val service = (xPath.evaluate(
-                        "//host[$i]/ports/port[$j]/service/@name",
-                        doc,
-                        XPathConstants.NODE
+                    "//host[$i]/ports/port[$j]/service/@name",
+                    doc,
+                    XPathConstants.NODE
                 ) as Node).textContent
                 val product = (xPath.evaluate(
-                        "//host[$i]/ports/port[$j]/service/@product",
-                        doc,
-                        XPathConstants.NODE
+                    "//host[$i]/ports/port[$j]/service/@product",
+                    doc,
+                    XPathConstants.NODE
                 ) as? Node)?.textContent ?: "unknown"
                 ports.add(Port(protocol, portID, state, service, product))
             }
@@ -90,10 +91,14 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         Log.info("port-scan start")
-        // 获取配置
-        parseParam()
-        // 执行
+        if (task.taskID == 0) {
+            Log.info("no task, exiting...")
+            return
+        }
         try {
+            // 获取配置
+            parseParam()
+            // 执行
             execute()
             // 解析中间文件，写结果
             KafkaHandler.produceResult(
