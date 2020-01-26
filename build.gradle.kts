@@ -28,3 +28,18 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
 }
+
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        mergeServiceFiles()
+        manifest {
+            attributes(mapOf("Main-Class" to "org.ndp.port_scan_ns.Main"))
+        }
+    }
+}
+
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
+}
