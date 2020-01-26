@@ -9,6 +9,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.ndp.port_scan_ns.Log
 import org.ndp.port_scan_ns.bean.KafkaResult
 import org.ndp.port_scan_ns.bean.KafkaTask
 import java.time.Duration
@@ -55,6 +56,7 @@ object KafkaHandler {
         val msgList = consumer.poll(Duration.ofSeconds(1))
         var param = KafkaTask(0, "", "")
         if (!msgList.isEmpty) {
+            Log.debug("kafka task: ${msgList.count()}")
             for (record in msgList.records(Settings.setting["topic.task"] as String)) {
                 param = kafkaTaskAdapter.fromJson(record.value().toString())!!
             }
