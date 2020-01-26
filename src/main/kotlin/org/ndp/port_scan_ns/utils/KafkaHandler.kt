@@ -55,8 +55,8 @@ object KafkaHandler {
     fun consumeTaskParam(): KafkaTask {
         val msgList = consumer.poll(Duration.ofSeconds(1))
         var param = KafkaTask(0, "", "")
+        Log.debug("kafka task: ${msgList.count()}")
         if (!msgList.isEmpty) {
-            Log.debug("kafka task: ${msgList.count()}")
             for (record in msgList.records(Settings.setting["topic.task"] as String)) {
                 param = kafkaTaskAdapter.fromJson(record.value().toString())!!
             }
