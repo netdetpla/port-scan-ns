@@ -13,11 +13,9 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.squareup.moshi:moshi-kotlin:1.9.2")
-    implementation("org.apache.kafka:kafka-clients:2.4.0")
-    implementation("org.apache.kafka:kafka-streams:2.4.0")
+    implementation("io.lettuce:lettuce-core:5.2.1.RELEASE")
     implementation("org.apache.logging.log4j:log4j-api:2.13.0")
     implementation("org.apache.logging.log4j:log4j-core:2.13.0")
-    implementation("org.slf4j:slf4j-log4j12:1.7.30")
 }
 
 tasks {

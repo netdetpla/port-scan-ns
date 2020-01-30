@@ -1,7 +1,7 @@
 package org.ndp.port_scan_ns
 
 import org.ndp.port_scan_ns.bean.*
-import org.ndp.port_scan_ns.utils.KafkaHandler
+import org.ndp.port_scan_ns.utils.RedisHandler
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import java.io.File
@@ -15,11 +15,13 @@ object Main {
 
     private lateinit var ports: String
     private val xPath = XPathFactory.newInstance().newXPath()
-    private val task = KafkaHandler.consumeTaskParam()
+    private val task = RedisHandler.consumeTaskParam(
+        RedisHandler.generateNonce(5)
+    )
 
     private fun parseParam() {
 
-        val param = task.param.split(";")
+        val param = task!!.param.split(";")
         val input = File("/input_file")
         input.writeText(param[0].replace(",", "\n"))
         ports = param[1]
@@ -91,7 +93,7 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         Log.info("port-scan start")
-        if (task.taskID == 0) {
+        if (task == null || task.taskID == 0) {
             Log.info("no task, exiting...")
             return
         }
@@ -101,15 +103,15 @@ object Main {
             // 执行
             execute()
             // 解析中间文件，写结果
-            KafkaHandler.produceResult(
-                KafkaResult(task.taskID, parseMidResult(), 0, "")
+            RedisHandler.produceResult(
+                MQResult(task.taskID, parseMidResult(), 0, "")
             )
         } catch (e: Exception) {
             Log.error(e.toString())
             val stringWriter = StringWriter()
             e.printStackTrace(PrintWriter(stringWriter))
-            KafkaHandler.produceResult(
-                KafkaResult(task.taskID, ArrayList(), 1, stringWriter.buffer.toString())
+            RedisHandler.produceResult(
+                MQResult(task.taskID, ArrayList(), 1, stringWriter.buffer.toString())
             )
         }
         // 结束
