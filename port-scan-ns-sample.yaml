@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: port-scan-job
+  name: port-scan-ns
 spec:
   completions: 10
   parallelism: 10
@@ -10,6 +10,6 @@ spec:
       name: port-scan
     spec:
       containers:
-        - name: port-scan-c
+        - name: port-scan-ns
           image: 192.168.75.130:5000/port-scan-ns
       restartPolicy: OnFailure
