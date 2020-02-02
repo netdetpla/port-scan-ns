@@ -1,15 +1,9 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Pod
 metadata:
   name: port-scan-ns
 spec:
-  completions: 10
-  parallelism: 10
-  template:
-    metadata:
-      name: port-scan
-    spec:
-      containers:
-        - name: port-scan-ns
-          image: 192.168.75.130:5000/port-scan-ns
-      restartPolicy: OnFailure
+  spec:
+    containers:
+      - name: port-scan-ns
+        image: 192.168.75.130:5000/port-scan-ns
