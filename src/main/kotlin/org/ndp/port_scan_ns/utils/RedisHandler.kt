@@ -43,6 +43,11 @@ object RedisHandler {
         )
         return if (content.isNotEmpty()) {
             consumedID = content[0].id
+            commands.xack(
+                Settings.setting["key.task"] as String,
+                Settings.setting["group"] as String,
+                consumedID
+            )
             mqTaskAdapter.fromJson(content[0].body["task"]!!)
         } else {
             null
@@ -52,11 +57,6 @@ object RedisHandler {
     fun produceResult(result: MQResult) {
         val body = HashMap<String, String>()
         body["result"] = mqResultAdapter.toJson(result)
-        commands.xack(
-            Settings.setting["key.task"] as String,
-            Settings.setting["group"] as String,
-            consumedID
-        )
         commands.xadd(Settings.setting["key.result"] as String, body)
     }
 }

@@ -4,7 +4,8 @@ kind: Job
 metadata:
   name: port-scan-ns
 spec:
-  parallelism: 5
+  completions: 10
+  parallelism: 10
   template:
     metadata:
       name: port-scan
